@@ -4,19 +4,38 @@
     <meta charset="utf-8" />
     <title>WebGL Demo</title>
     <script id="vertex-shader" type="x-shader/x-vertex">#version 300 es
-      in vec4 aVertexPosition;
+      in vec3 aVertexPosition;
+      in vec3 aVertexColour;
+      out vec3 vColour;
       void main() {
-        gl_Position = aVertexPosition;
+        gl_Position = vec4(aVertexPosition, 1);
+        vColour = aVertexColour;
       }
     </script>
     <script id="fragment-shader" type="x-shader/x-fragment">#version 300 es
       precision highp float;
+      in vec3 vColour;
       out vec4 outputColor;
       void main() {
-        outputColor = vec4(1.0, 0.0, 0.0, 1.0);
+        outputColor = vec4(vColour, 1.0);
       }
     </script>
-    <script src="main.js" type="module"></script>
+    <script src="gl-matrix-min.js"></script>
+    <script>
+      window.mat4 = glMatrix.mat4;
+      window.mat2 = glMatrix.mat2;
+      window.mat2d= glMatrix.mat2d;
+      window.mat3= glMatrix.mat3;
+      window.mat4= glMatrix.mat4;
+      window.quat= glMatrix.quat;
+      window.quat2= glMatrix.quat2;
+      window.vec2= glMatrix.vec2;
+      window.vec3= glMatrix.vec3;
+      window.vec4= glMatrix.vec4;
+      </script>
+    <script src="drawable_object.js"></script>
+    <script src="vertex.js"></script>
+    <script src="main.js"></script>
   </head>
 
   <body>

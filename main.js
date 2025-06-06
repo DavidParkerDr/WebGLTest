@@ -1,6 +1,7 @@
 let gl = null;
 let shaderProgram;
 let vertexArrayObject;
+let drawableObject;
 // Define vertices
 const vertices = new Float32Array([
      0.0,  0.5,  0.0,
@@ -30,8 +31,11 @@ function main() {
     );
     return;
   }
+  let vertex = new Vertex(vec3.fromValues(1,0,0));
+ 
+  drawableObject = DrawableObject.createTriangle();
   initialiseShaders();
-  initialiseBuffers(quadVertices);
+  initialiseBuffers(drawableObject.getVertices());
   render();
 }
 
@@ -145,15 +149,18 @@ function initialiseBuffers(vertices) {
   // Arguments:
   //   Location of the input variable in the shader. the layout(location = 0) line in the vertex shader explicitly sets it to 0.
   //   How many elements will be sent to the variable. In this case, 3 floats for every vertex.
-  //   The data type of the elements set, in this case float.
+  //   The data type of the elements set, in this case float; note a float is 4 bytes.
   //   Whether or not the data should be converted to normalized device coordinates. In this case, false, because that's already done.
   //   The stride; this is how many bytes are between the last element of one vertex and the first element of the next. 3 * sizeof(float) in this case.
   //   The offset; this is how many bytes it should skip to find the first element of the first vertex. 0 as of right now.
   // Stride and Offset are just sort of glossed over for now, but when we get into texture coordinates they'll be shown in better detail.
   // Link vertex attributes
   const aVertexPosition = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
-  gl.vertexAttribPointer(aVertexPosition, 3, gl.FLOAT, false, 0, 0);
+  gl.vertexAttribPointer(aVertexPosition, 3, gl.FLOAT, false, 6 * 4, 0);
   gl.enableVertexAttribArray(aVertexPosition);
+  const aVertexColour = gl.getAttribLocation(shaderProgram, 'aVertexColour');
+  gl.vertexAttribPointer(aVertexColour, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
+  gl.enableVertexAttribArray(aVertexColour);
 }
 
 function render() {
