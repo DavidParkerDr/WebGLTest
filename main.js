@@ -31,9 +31,9 @@ function main() {
     );
     return;
   }
-  let vertex = new Vertex(vec3.fromValues(1,0,0));
+  
  
-  drawableObject = DrawableObject.createTriangle();
+  drawableObject = DrawableObject.createCircle();
   initialiseShaders();
   initialiseBuffers(drawableObject.getVertices());
   render();
@@ -155,11 +155,14 @@ function initialiseBuffers(vertices) {
   //   The offset; this is how many bytes it should skip to find the first element of the first vertex. 0 as of right now.
   // Stride and Offset are just sort of glossed over for now, but when we get into texture coordinates they'll be shown in better detail.
   // Link vertex attributes
+
+  let numberOfVertexParts = 6;
+  let numberOfBytesPerVertexPart = 4;
   const aVertexPosition = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
-  gl.vertexAttribPointer(aVertexPosition, 3, gl.FLOAT, false, 6 * 4, 0);
+  gl.vertexAttribPointer(aVertexPosition, 3, gl.FLOAT, false, numberOfVertexParts * numberOfBytesPerVertexPart, 0);
   gl.enableVertexAttribArray(aVertexPosition);
   const aVertexColour = gl.getAttribLocation(shaderProgram, 'aVertexColour');
-  gl.vertexAttribPointer(aVertexColour, 3, gl.FLOAT, false, 6 * 4, 3 * 4);
+  gl.vertexAttribPointer(aVertexColour, 3, gl.FLOAT, false, numberOfVertexParts * numberOfBytesPerVertexPart, 3 * numberOfBytesPerVertexPart);
   gl.enableVertexAttribArray(aVertexColour);
 }
 
@@ -171,5 +174,5 @@ function render() {
   // Draw the triangle
   gl.bindVertexArray(vertexArrayObject);
   gl.useProgram(shaderProgram);
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
+  gl.drawArrays(gl.TRIANGLES, 0, drawableObject.numVertices());
 }
