@@ -3,7 +3,7 @@ class DrawableObject {
         this.setVertices(pVertices);
     } 
     getVertices() {
-        const vertexData = this.mVertices.flatMap(v => [...v.mPosition, ...v.mColour])
+        const vertexData = this.mVertices.flatMap(v => [...v.mPosition, ...v.mColour, ...v.mNormal])
         const float32Data = new Float32Array(vertexData);
         return float32Data;
     }
@@ -43,55 +43,61 @@ class DrawableObject {
         ];
         return new DrawableObject(vertices);
     }
-    static createCube(pColour = vec3.fromValues(0.0,  0.0,  1.0)) {
+    static createCube(pColour = vec4.fromValues(1.0,  1.0,  1.0, 1.0)) {
+        let frontNormal = vec3.fromValues(0.0, 0.0, 1.0);
+        let backNormal = vec3.fromValues(0.0, 0.0, -1.0);
+        let leftNormal = vec3.fromValues(-1.0, 0.0, 0.0);
+        let rightNormal = vec3.fromValues(1.0, 0.0, 0.0);
+        let topNormal = vec3.fromValues(0.0, 1.0, 0.0);
+        let bottomNormal = vec3.fromValues(0.0, -1.0, 0.0);
         let vertices = [
             // Front
-            new Vertex(vec3.fromValues(-0.5,  0.5, 0.5), pColour), // Top-left vertex 
-            new Vertex(vec3.fromValues(0.5,  0.5, 0.5), pColour), // Top-right vertex 
-            new Vertex(vec3.fromValues(0.5, -0.5, 0.5), pColour), // Bottom-right vertex 
-            new Vertex(vec3.fromValues(-0.5,  0.5, 0.5), pColour), // Top-left vertex 
-            new Vertex(vec3.fromValues(0.5, -0.5, 0.5), pColour), // Bottom-right vertex
-            new Vertex(vec3.fromValues(-0.5, -0.5, 0.5), pColour), // Bottom-left vertex 
+            new Vertex(vec3.fromValues(-0.5,  0.5, 0.5), pColour, frontNormal), // Top-left vertex 
+            new Vertex(vec3.fromValues(0.5,  0.5, 0.5), pColour, frontNormal), // Top-right vertex 
+            new Vertex(vec3.fromValues(0.5, -0.5, 0.5), pColour, frontNormal), // Bottom-right vertex 
+            new Vertex(vec3.fromValues(-0.5,  0.5, 0.5), pColour, frontNormal), // Top-left vertex 
+            new Vertex(vec3.fromValues(0.5, -0.5, 0.5), pColour, frontNormal), // Bottom-right vertex
+            new Vertex(vec3.fromValues(-0.5, -0.5, 0.5), pColour, frontNormal), // Bottom-left vertex 
 
             // Back
-            new Vertex(vec3.fromValues(-0.5,  0.5, -0.5), pColour), // Top-left vertex 
-            new Vertex(vec3.fromValues(0.5,  0.5, -0.5), pColour), // Top-right vertex 
-            new Vertex(vec3.fromValues(0.5, -0.5, -0.5), pColour), // Bottom-right vertex 
-            new Vertex(vec3.fromValues(-0.5,  0.5, -0.5), pColour), // Top-left vertex 
-            new Vertex(vec3.fromValues(0.5, -0.5, -0.5), pColour), // Bottom-right vertex
-            new Vertex(vec3.fromValues(-0.5, -0.5, -0.5), pColour), // Bottom-left vertex 
+            new Vertex(vec3.fromValues(-0.5,  0.5, -0.5), pColour, backNormal), // Top-left vertex 
+            new Vertex(vec3.fromValues(0.5,  0.5, -0.5), pColour, backNormal), // Top-right vertex 
+            new Vertex(vec3.fromValues(0.5, -0.5, -0.5), pColour, backNormal), // Bottom-right vertex 
+            new Vertex(vec3.fromValues(-0.5,  0.5, -0.5), pColour, backNormal), // Top-left vertex 
+            new Vertex(vec3.fromValues(0.5, -0.5, -0.5), pColour, backNormal), // Bottom-right vertex
+            new Vertex(vec3.fromValues(-0.5, -0.5, -0.5), pColour, backNormal), // Bottom-left vertex 
 
             //Left
-            new Vertex(vec3.fromValues(-0.5, -0.5, -0.5),  pColour), // Top-back vertex 
-            new Vertex(vec3.fromValues(-0.5, -0.5,  0.5),  pColour), // Top-front vertex 
-            new Vertex(vec3.fromValues(-0.5,  0.5,  0.5),  pColour), // Bottom-front vertex 
-            new Vertex(vec3.fromValues(-0.5, -0.5, -0.5),  pColour), // Top-back vertex 
-            new Vertex(vec3.fromValues(-0.5,  0.5,  0.5),  pColour), // Bottom-front vertex 
-            new Vertex(vec3.fromValues(-0.5,  0.5, -0.5),  pColour), // Bottom-back vertex 
+            new Vertex(vec3.fromValues(-0.5, -0.5, -0.5),  pColour, leftNormal), // Top-back vertex 
+            new Vertex(vec3.fromValues(-0.5, -0.5,  0.5),  pColour, leftNormal), // Top-front vertex 
+            new Vertex(vec3.fromValues(-0.5,  0.5,  0.5),  pColour, leftNormal), // Bottom-front vertex 
+            new Vertex(vec3.fromValues(-0.5, -0.5, -0.5),  pColour, leftNormal), // Top-back vertex 
+            new Vertex(vec3.fromValues(-0.5,  0.5,  0.5),  pColour, leftNormal), // Bottom-front vertex 
+            new Vertex(vec3.fromValues(-0.5,  0.5, -0.5),  pColour, leftNormal), // Bottom-back vertex 
 
             //Right
-            new Vertex(vec3.fromValues( 0.5, -0.5, -0.5),  pColour),// Top-back vertex 
-            new Vertex(vec3.fromValues( 0.5, -0.5,  0.5),  pColour), // Top-front vertex 
-            new Vertex(vec3.fromValues( 0.5,  0.5,  0.5),  pColour), // Bottom-front vertex 
-            new Vertex(vec3.fromValues( 0.5, -0.5, -0.5),  pColour), // Top-back vertex 
-            new Vertex(vec3.fromValues( 0.5,  0.5,  0.5),  pColour), // Bottom-front vertex 
-            new Vertex(vec3.fromValues( 0.5,  0.5, -0.5),  pColour), // Bottom-back vertex  
+            new Vertex(vec3.fromValues( 0.5, -0.5, -0.5),  pColour, rightNormal),// Top-back vertex 
+            new Vertex(vec3.fromValues( 0.5, -0.5,  0.5),  pColour, rightNormal), // Top-front vertex 
+            new Vertex(vec3.fromValues( 0.5,  0.5,  0.5),  pColour, rightNormal), // Bottom-front vertex 
+            new Vertex(vec3.fromValues( 0.5, -0.5, -0.5),  pColour, rightNormal), // Top-back vertex 
+            new Vertex(vec3.fromValues( 0.5,  0.5,  0.5),  pColour, rightNormal), // Bottom-front vertex 
+            new Vertex(vec3.fromValues( 0.5,  0.5, -0.5),  pColour, rightNormal), // Bottom-back vertex  
 
             //Top
-            new Vertex(vec3.fromValues(-0.5, 0.5, -0.5),  pColour), // Left-back vertex 
-            new Vertex(vec3.fromValues(-0.5, 0.5,  0.5),  pColour), // Left-front vertex 
-            new Vertex(vec3.fromValues( 0.5, 0.5,  0.5),  pColour), // Right-front vertex 
-            new Vertex(vec3.fromValues(-0.5, 0.5, -0.5),  pColour), // Left-back vertex 
-            new Vertex(vec3.fromValues( 0.5, 0.5,  0.5),  pColour), // Right-front vertex 
-            new Vertex(vec3.fromValues( 0.5, 0.5, -0.5),  pColour), // Right-back vertex 
+            new Vertex(vec3.fromValues(-0.5, 0.5, -0.5),  pColour, topNormal), // Left-back vertex 
+            new Vertex(vec3.fromValues(-0.5, 0.5,  0.5),  pColour, topNormal), // Left-front vertex 
+            new Vertex(vec3.fromValues( 0.5, 0.5,  0.5),  pColour, topNormal), // Right-front vertex 
+            new Vertex(vec3.fromValues(-0.5, 0.5, -0.5),  pColour, topNormal), // Left-back vertex 
+            new Vertex(vec3.fromValues( 0.5, 0.5,  0.5),  pColour, topNormal), // Right-front vertex 
+            new Vertex(vec3.fromValues( 0.5, 0.5, -0.5),  pColour, topNormal), // Right-back vertex 
 
             //Bottom
-            new Vertex(vec3.fromValues(-0.5,  -0.5, -0.5),  pColour), // Left-back vertex 
-            new Vertex(vec3.fromValues(-0.5,  -0.5,  0.5),  pColour), // Left-front vertex 
-            new Vertex(vec3.fromValues( 0.5,  -0.5,  0.5),  pColour), // Right-front vertex 
-            new Vertex(vec3.fromValues(-0.5,  -0.5, -0.5),  pColour), // Left-back vertex 
-            new Vertex(vec3.fromValues( 0.5,  -0.5,  0.5),  pColour), // Right-front vertex 
-            new Vertex(vec3.fromValues( 0.5,  -0.5, -0.5),  pColour) // Right-back vertex   
+            new Vertex(vec3.fromValues(-0.5,  -0.5, -0.5),  pColour, bottomNormal), // Left-back vertex 
+            new Vertex(vec3.fromValues(-0.5,  -0.5,  0.5),  pColour, bottomNormal), // Left-front vertex 
+            new Vertex(vec3.fromValues( 0.5,  -0.5,  0.5),  pColour, bottomNormal), // Right-front vertex 
+            new Vertex(vec3.fromValues(-0.5,  -0.5, -0.5),  pColour, bottomNormal), // Left-back vertex 
+            new Vertex(vec3.fromValues( 0.5,  -0.5,  0.5),  pColour, bottomNormal), // Right-front vertex 
+            new Vertex(vec3.fromValues( 0.5,  -0.5, -0.5),  pColour, bottomNormal) // Right-back vertex   
         ];
         return new DrawableObject(vertices);
     }

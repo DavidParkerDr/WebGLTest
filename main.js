@@ -2,6 +2,7 @@ let gl = null;
 let shaderProgram;
 let vertexArrayObject;
 let drawableObject;
+let currentAngle;
 // Define vertices
 const vertices = new Float32Array([
      0.0,  0.5,  0.0,
@@ -32,10 +33,12 @@ function main() {
     return;
   }
   
- 
-  drawableObject = DrawableObject.createCircle();
+  currentAngle = 0;
+  drawableObject = DrawableObject.createCube();
   initialiseShaders();
   initialiseBuffers(drawableObject.getVertices());
+  gl.enable(gl.DEPTH_TEST);
+  gl.depthMask(true);
   render();
 }
 
@@ -156,23 +159,46 @@ function initialiseBuffers(vertices) {
   // Stride and Offset are just sort of glossed over for now, but when we get into texture coordinates they'll be shown in better detail.
   // Link vertex attributes
 
-  let numberOfVertexParts = 6;
+  let numberOfVertexParts = 10;
   let numberOfBytesPerVertexPart = 4;
-  const aVertexPosition = gl.getAttribLocation(shaderProgram, 'aVertexPosition');
-  gl.vertexAttribPointer(aVertexPosition, 3, gl.FLOAT, false, numberOfVertexParts * numberOfBytesPerVertexPart, 0);
-  gl.enableVertexAttribArray(aVertexPosition);
-  const aVertexColour = gl.getAttribLocation(shaderProgram, 'aVertexColour');
-  gl.vertexAttribPointer(aVertexColour, 3, gl.FLOAT, false, numberOfVertexParts * numberOfBytesPerVertexPart, 3 * numberOfBytesPerVertexPart);
-  gl.enableVertexAttribArray(aVertexColour);
+  const aPosition = gl.getAttribLocation(shaderProgram, 'aPosition');
+  gl.vertexAttribPointer(aPosition, 3, gl.FLOAT, false, numberOfVertexParts * numberOfBytesPerVertexPart, 0);
+  gl.enableVertexAttribArray(aPosition);
+  const aColour = gl.getAttribLocation(shaderProgram, 'aColour');
+  gl.vertexAttribPointer(aColour, 4, gl.FLOAT, false, numberOfVertexParts * numberOfBytesPerVertexPart, 3 * numberOfBytesPerVertexPart);
+  gl.enableVertexAttribArray(aColour);
+  const aNormal = gl.getAttribLocation(shaderProgram, 'aNormal');
+  gl.vertexAttribPointer(aNormal, 3, gl.FLOAT, false, numberOfVertexParts * numberOfBytesPerVertexPart, 7 * numberOfBytesPerVertexPart);
+  gl.enableVertexAttribArray(aNormal);
 }
 
 function render() {
   // Set clear color to black, fully opaque
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   // Clear the color buffer with specified clear color
-  gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+  gl.useProgram(shaderProgram);
+  let lightPositionLocation = gl.getUniformLocation(shaderProgram, "uLightPosition");
+  let viewLocation = gl.getUniformLocation(shaderProgram, "uView");
+  let projectionLocation = gl.getUniformLocation(shaderProgram, "uProjection");
+  let projection = mat4.create();
+  mat4.perspective(projection, Math.PI/4, 800.0 / 600.0, 0.1, 100.0);
+  let view = mat4.create();
+  mat4.fromTranslation(view, vec3.fromValues(0.0, 0.0, -6.0));
+  currentAngle += Math.PI / 1000;
+  if(currentAngle > 2 * Math.PI) {
+    currentAngle -= 2 * Math.PI;
+  }
+  let modelLocation = gl.getUniformLocation(shaderProgram, "uModel");
+  let model = mat4.create();
+  mat4.fromRotation(model, currentAngle, vec3.fromValues(1, 1, 0.0));
+  gl.uniform3fv(lightPositionLocation, vec3.fromValues(0.0, 0.0, 10.0));
+  gl.uniformMatrix4fv(modelLocation, true, model);
+  gl.uniformMatrix4fv(projectionLocation, true, projection);
+  gl.uniformMatrix4fv(viewLocation, true, view);
+
   // Draw the triangle
   gl.bindVertexArray(vertexArrayObject);
-  gl.useProgram(shaderProgram);
   gl.drawArrays(gl.TRIANGLES, 0, drawableObject.numVertices());
+  requestAnimationFrame(render);
 }
